@@ -1,0 +1,8 @@
+# Ignore .env file
+.env
+
+# Ignore database files
+data-*/
+
+# Ignore Bruno files
+server/bruno/

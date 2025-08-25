@@ -1,0 +1,36 @@
+services:
+    auth-db:
+        image: postgres:16
+        container_name: auth-db
+        restart: always
+        ports:
+            - "5432:5432"
+        volumes:
+            - ./data-auth:/var/lib/postgresql/data
+        environment:
+            POSTGRES_USER: localvault-auth
+            POSTGRES_PASSWORD: authpassword
+            POSTGRES_DB: authdb
+        networks:
+            - localvault_network
+
+    pgadmin:
+        image: dpage/pgadmin4
+        container_name: pgadmin
+        restart: 'always'
+        environment:
+            PGADMIN_DEFAULT_EMAIL: admin@localvault.com
+            PGADMIN_DEFAULT_PASSWORD: adminpassword
+        ports:
+            - "8080:80"
+        depends_on:
+            - auth-db
+        networks:
+            - localvault_network
+            
+networks:
+    localvault_network:
+        driver: bridge
+
+volumes:
+    data-auth:
