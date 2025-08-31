@@ -9,4 +9,8 @@ import (
 func AuthRoutes(app *fiber.App, userService services.UserService) {
 	app.Post("/login", handlers.Login(userService))
 	app.Post("/create-user", handlers.CreateUser(userService))
+
+	// Protected routes
+	authorize := app.Group("/authorize", services.JWTMiddleware)
+	authorize.Get("/me", handlers.Me)
 }

@@ -4,6 +4,7 @@ import (
 	"log"
 
 	"github.com/gofiber/fiber/v2"
+	"github.com/otaviozin/localvault/internal/config"
 	"github.com/otaviozin/localvault/internal/db"
 	"github.com/otaviozin/localvault/internal/repositories"
 	"github.com/otaviozin/localvault/internal/services"
@@ -11,6 +12,8 @@ import (
 )
 
 func main() {
+	config.LoadConfig()
+
 	db.Connect()
 
 	err := db.DB.AutoMigrate(&models.User{})

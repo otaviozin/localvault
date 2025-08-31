@@ -6,6 +6,7 @@ import (
 	"encoding/base64"
 	"fmt"
 	"strings"
+	"time"
 
 	"github.com/go-playground/validator/v10"
 	"github.com/gofiber/fiber/v2"
@@ -124,13 +125,39 @@ func Login(userService services.UserService) fiber.Handler {
 			return c.Status(fiber.StatusUnauthorized).JSON(fiber.Map{"error": "invalid email or password"})
 		}
 
+		// Remember to remove this hardcode
+		permissions := []string{"read:users", "write:posts"}
+		token, err := services.GenerateJWT(user.ID, user.Email, user.Username, permissions)
+		if err != nil {
+			return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{"error": "could not generate token"})
+		}
+
+		c.Cookie(&fiber.Cookie{
+			Name:     "access_token",
+			Value:    token,
+			Expires:  time.Now().Add(24 * time.Hour),
+			HTTPOnly: true,
+			Secure:   true,
+			SameSite: "Strict",
+		})
+
 		return c.Status(fiber.StatusOK).JSON(fiber.Map{
-			"message": "login successful",
 			"user": fiber.Map{
-				"id":       user.ID,
-				"username": user.Username,
-				"email":    user.Email,
+				"id":          user.ID,
+				"username":    user.Username,
+				"email":       user.Email,
+				"permissions": permissions,
 			},
 		})
 	}
+}
+
+func Me(c *fiber.Ctx) error {
+	claims := c.Locals("user").(*services.Claims)
+	return c.JSON(fiber.Map{
+		"id":          claims.UserID,
+		"email":       claims.Email,
+		"username":    claims.Username,
+		"permissions": claims.Permissions,
+	})
 }
