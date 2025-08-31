@@ -6,7 +6,7 @@ import { z } from 'zod';
 import { Button } from '@/components/ui/button';
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
-import { usePathname } from 'next/navigation';
+import { usePathname, useRouter } from 'next/navigation';
 import { SignIn, SignUp } from '@/api/auth/user';
 
 const formSchema = z
@@ -27,6 +27,7 @@ const formSchema = z
 export function AccountForm() {
     const pathName = usePathname();
     const path = pathName === '/signin' ? 'Sign In' : 'Sign Up';
+    const router = useRouter();
 
     const isDev = process.env.NEXT_PUBLIC_APP_ENV === 'DEV';
 
@@ -47,11 +48,17 @@ export function AccountForm() {
               },
     });
 
-    function onSubmit(values: z.infer<typeof formSchema>) {
-        if (path === 'Sign In') {
-            SignIn(values);
-        } else {
-            SignUp(values);
+    async function onSubmit(values: z.infer<typeof formSchema>) {
+        try {
+            if (path === 'Sign In') {
+                await SignIn(values);
+                router.push('/');
+            } else {
+                await SignUp(values);
+                router.push('/signin');
+            }
+        } catch (err) {
+            console.error(err);
         }
     }
 

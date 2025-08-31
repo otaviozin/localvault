@@ -13,3 +13,11 @@ export const SignIn = async (data: any) => {
     const response = await AuthGateway.post('/login', data);
     return response.data;
 };
+
+export const Me = async () => {
+    const response = await AuthGateway.get('/authorize/me', {
+        withCredentials: true,
+    });
+
+    return response.data;
+};

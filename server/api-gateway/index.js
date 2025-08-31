@@ -12,7 +12,8 @@ app.use(express.json());
 app.use(cors({
   origin: 'http://localhost:3000',
   methods: ['GET','POST','PUT','DELETE','OPTIONS'],
-  allowedHeaders: ['Content-Type','Authorization']
+  allowedHeaders: ['Content-Type','Authorization'],
+  credentials: true
 }));
 
 app.get('/', (req, res) => res.status(200).json({ message: 'API gateway is working!🚀', code: 200 }));
