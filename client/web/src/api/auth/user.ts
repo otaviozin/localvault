@@ -1,3 +1,6 @@
+'use server';
+
+import { cookies } from 'next/headers';
 import { Gateway } from '..';
 
 export const AuthGateway = Gateway.create({
@@ -15,9 +18,20 @@ export const SignIn = async (data: any) => {
 };
 
 export const Me = async () => {
-    const response = await AuthGateway.get('/authorize/me', {
-        withCredentials: true,
-    });
+    const cookieStore = await cookies();
+    const token = cookieStore.get('access_token')?.value;
 
-    return response.data;
+    if (!token) return null;
+
+    try {
+        const response = await AuthGateway.get('/authorize/me', {
+            headers: {
+                Cookie: `access_token=${token}`,
+            },
+        });
+
+        return response.data;
+    } catch (err) {
+        console.error(err);
+    }
 };

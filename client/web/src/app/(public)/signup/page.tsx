@@ -1,6 +1,6 @@
 'use client';
 
-import { AccountForm } from '@/components/account-form';
+import { AccountForm } from '@/components/forms/account-form';
 import { Button } from '@/components/ui/button';
 import { Card, CardAction, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import Link from 'next/link';
